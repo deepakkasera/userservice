@@ -22,7 +22,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<UserDto> login(@RequestBody LoginRequestDto request) {
         return authService.login(request.getEmail(), request.getPassword());
-//        return null;
     }
 
     @PostMapping("/logout")

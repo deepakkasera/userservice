@@ -7,6 +7,8 @@ import dev.deepak.userservicetestfinal.models.User;
 import dev.deepak.userservicetestfinal.models.Session;
 import dev.deepak.userservicetestfinal.repositories.SessionRepository;
 import dev.deepak.userservicetestfinal.repositories.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.MacAlgorithm;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -134,6 +136,29 @@ public class AuthService {
             return null;
         }
 
+        Session session = sessionOptional.get();
+
+        if (!session.getSessionStatus().equals(SessionStatus.ACTIVE)) {
+            return SessionStatus.ENDED;
+        }
+
+        Date currentTime = new Date();
+        if (session.getExpiringAt().before(currentTime)) {
+            return SessionStatus.ENDED;
+        }
+
+        //JWT Decoding.
+        Jws<Claims> jwsClaims = Jwts.parser().build().parseSignedClaims(token);
+
+        // Map<String, Object> -> Payload object or JSON
+        String email = (String) jwsClaims.getPayload().get("email");
+        List<Role> roles = (List<Role>) jwsClaims.getPayload().get("roles");
+        Date createdAt = (Date) jwsClaims.getPayload().get("createdAt");
+
+//        if (restrictedEmails.contains(email)) {
+//            //reject the token
+//        }
+
         return SessionStatus.ACTIVE;
     }
 }
@@ -144,7 +169,7 @@ eyJjdHkiOiJ0ZXh0L3BsYWluIiwiYWxnIjoiSFMyNTYifQ.
 SGVsbG8gV29ybGQh.
 EHQJBVvni4oDe_NEqnecIwNmOTUe_7Hs_jVW_XT-b1o
 
- */
+*/
 
 /*
 Task-1 : Implement limit on number of active sessions for a user.

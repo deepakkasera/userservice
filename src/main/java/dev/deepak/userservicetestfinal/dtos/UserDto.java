@@ -1,5 +1,6 @@
 package dev.deepak.userservicetestfinal.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.deepak.userservicetestfinal.models.Role;
 import dev.deepak.userservicetestfinal.models.User;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import java.util.Set;
 @Setter
 public class UserDto {
     private String email;
+    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
 
     public static UserDto from(User user) {
